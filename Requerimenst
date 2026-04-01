@@ -1,0 +1,20 @@
+# Core
+pandas==2.2.0
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+
+# ETL & Data
+openpyxl==3.1.2
+requests==2.31.0
+faker==22.0.0
+
+# Dashboard
+streamlit==1.31.0
+plotly==5.18.0
+
+# AI
+anthropic==0.40.0
+
+# Utils
+python-dotenv==1.0.0
+schedule==1.2.1
