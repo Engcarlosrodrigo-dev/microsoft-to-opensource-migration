@@ -1,0 +1,132 @@
+# 📊 Análise Detalhada de Custos
+## Microsoft Stack vs Modern Open Source
+
+> **Empresa:** 200 funcionários | Setor: Administrativo/Serviços
+> **Data da análise:** Março/2026
+> **Fonte dos preços:** Microsoft oficial + Azure Pricing Calculator
+
+---
+
+## 🔴 ANTES — Stack Microsoft
+
+### Power BI Pro
+- **Preço oficial (2026):** $14/usuário/mês *(aumento de 40% em abril/2025)*
+- **Usuários com licença:** 50
+- **Custo mensal:** $700 USD = **R$ 4.060/mês**
+- **Custo anual:** **R$ 48.720/ano**
+- **Limitações:** Todo usuário que visualiza relatórios precisa de licença paga
+
+### Microsoft 365 Business Standard
+- **Preço oficial (2026):** $14/usuário/mês *(aumento de 12% em julho/2026)*
+- **Usuários:** 200
+- **Custo mensal:** $2.800 USD = **R$ 16.240/mês**
+- **Custo anual:** **R$ 194.880/ano**
+
+### Azure SQL Database
+- **Configuração:** General Purpose, 4 vCores, 20.4 GB RAM
+- **Custo estimado:** ~$300/mês = **R$ 1.740/mês**
+- **Custo anual:** **R$ 20.880/ano**
+
+### Azure Data Factory
+- **Uso estimado:** 500 execuções/mês + data flows
+- **Custo estimado:** ~$500/mês = **R$ 2.900/mês**
+- **Custo anual:** **R$ 34.800/ano**
+
+### TOTAL MICROSOFT
+| | USD/mês | BRL/mês | BRL/ano |
+|---|---|---|---|
+| Power BI Pro (50 usuários) | $700 | R$ 4.060 | R$ 48.720 |
+| Microsoft 365 Business Standard | $2.800 | R$ 16.240 | R$ 194.880 |
+| Azure SQL Database | $300 | R$ 1.740 | R$ 20.880 |
+| Azure Data Factory | $500 | R$ 2.900 | R$ 34.800 |
+| **TOTAL** | **$4.300** | **R$ 24.940** | **R$ 299.280** |
+
+---
+
+## 🟢 DEPOIS — Stack Open Source + IA
+
+### PostgreSQL (self-hosted)
+- **Licença:** Gratuita (open source)
+- **Custo de hospedagem:** incluso no VPS
+- **Custo mensal:** **R$ 0**
+
+### Python + Streamlit + Plotly (dashboards)
+- **Licença:** Gratuita (open source)
+- **Sem limite de usuários**
+- **Custo mensal:** **R$ 0**
+
+### Claude API (Anthropic) — insights automáticos
+- **Uso estimado:** ~10M tokens/mês
+- **Custo estimado:** ~$50/mês = **R$ 290/mês**
+- **Benefício:** Relatórios automáticos, análises em linguagem natural
+
+### VPS Cloud (servidor da aplicação)
+- **Configuração:** 4 vCPUs, 8 GB RAM, 100 GB SSD
+- **Provedor:** AWS t3.medium ou equivalente
+- **Custo:** ~$30/mês = **R$ 174/mês**
+
+### Microsoft 365 Business Basic (só e-mail e Teams)
+- **Preço oficial (2026):** $7/usuário/mês
+- **Usuários:** 200
+- **Custo mensal:** $1.400 = **R$ 8.120/mês**
+- **Justificativa:** Mantém e-mail corporativo e Teams para comunicação
+
+### TOTAL OPEN SOURCE
+| | USD/mês | BRL/mês | BRL/ano |
+|---|---|---|---|
+| PostgreSQL | $0 | R$ 0 | R$ 0 |
+| Python + Streamlit + Plotly | $0 | R$ 0 | R$ 0 |
+| Claude API | $50 | R$ 290 | R$ 3.480 |
+| VPS Cloud | $30 | R$ 174 | R$ 2.088 |
+| Microsoft 365 Basic (e-mail) | $1.400 | R$ 8.120 | R$ 97.440 |
+| **TOTAL** | **$1.480** | **R$ 8.584** | **R$ 103.008** |
+
+---
+
+## 💰 RESULTADO FINAL
+
+| Métrica | Valor |
+|---|---|
+| **Custo mensal ANTES** | R$ 24.940 |
+| **Custo mensal DEPOIS** | R$ 8.584 |
+| **💰 Economia mensal** | **R$ 16.356** |
+| **💰 Economia anual** | **R$ 196.272** |
+| **📉 Redução percentual** | **~65%** |
+| **⏱️ Tempo de implementação** | 60-90 dias |
+| **🔄 Payback do projeto** | < 1 mês |
+
+---
+
+## 📈 Projeção de Economia — 3 anos
+
+| Ano | Economia acumulada |
+|---|---|
+| Ano 1 | R$ 196.272 |
+| Ano 2 | R$ 392.544 |
+| Ano 3 | **R$ 588.816** |
+
+> *Considerando reajuste anual médio de 10% nos preços Microsoft (histórico 2022-2026)*
+
+---
+
+## ⚠️ Riscos e Mitigações
+
+| Risco | Probabilidade | Mitigação |
+|---|---|---|
+| Resistência dos usuários | Alta | Treinamento + interface amigável com Streamlit |
+| Curva de aprendizado TI | Média | Documentação detalhada + suporte interno |
+| Disponibilidade do servidor | Baixa | VPS com SLA 99.9% + backup automático |
+| Segurança dos dados | Baixa | PostgreSQL com SSL + VPN + backups criptografados |
+
+---
+
+## ✅ Conclusão
+
+A migração da stack Microsoft para a arquitetura open source proposta representa uma **economia de R$ 196.272 no primeiro ano**, mantendo — e em muitos aspectos melhorando — as capacidades analíticas da empresa através da integração com IA generativa (Claude API).
+
+O ROI do projeto é imediato, com payback inferior a 30 dias após a implementação.
+
+---
+
+*Análise elaborada por Carlos Rodrigo — AI Engineer | Data Engineer*
+*Fontes: Microsoft Official Pricing, Azure Pricing Calculator, Anthropic API Pricing*
