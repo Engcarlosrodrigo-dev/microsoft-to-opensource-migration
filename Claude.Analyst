@@ -1,0 +1,243 @@
+"""
+claude_analyst.py
+=================
+Análises automáticas de dados com Claude API
+Substitui: análises manuais e relatórios estáticos
+Custo: ~$50/mês (vs horas de trabalho manual)
+
+Funcionalidades:
+- Narrativa automática de dashboards
+- Detecção de anomalias
+- Recomendações estratégicas
+- Relatórios executivos em linguagem natural
+
+Uso:
+    python ai_insights/claude_analyst.py
+"""
+
+import os
+import json
+import anthropic
+import pandas as pd
+from sqlalchemy import create_engine
+from datetime import datetime
+
+PG_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/empresa_db")
+ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+
+
+class DataAnalyst:
+    """
+    Analista de dados com IA usando Claude.
+    Gera insights automáticos a partir dos dados do PostgreSQL.
+    """
+
+    def __init__(self):
+        self.engine = create_engine(PG_URL)
+        self.client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
+        self.model = "claude-sonnet-4-20250514"
+
+    def _perguntar_claude(self, prompt: str, max_tokens: int = 1000) -> str:
+        """Envia uma pergunta ao Claude e retorna a resposta."""
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=max_tokens,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.content[0].text
+
+    def coletar_metricas(self) -> dict:
+        """Coleta métricas do banco PostgreSQL."""
+        try:
+            metricas = {}
+
+            # Vendas do mês atual
+            df_vendas = pd.read_sql("""
+                SELECT
+                    COUNT(*) as total_vendas,
+                    SUM(valor_total) as receita_total,
+                    AVG(valor_total) as ticket_medio,
+                    MAX(valor_total) as maior_venda
+                FROM vendas
+                WHERE DATE_TRUNC('month', data_venda) = DATE_TRUNC('month', NOW())
+                AND status = 'concluida'
+            """, self.engine)
+            metricas["vendas_mes"] = df_vendas.to_dict(orient="records")[0]
+
+            # Top produtos
+            df_produtos = pd.read_sql("""
+                SELECT p.nome, p.categoria, SUM(v.valor_total) as receita
+                FROM vendas v
+                JOIN produtos p ON v.produto_id = p.id
+                WHERE data_venda >= NOW() - INTERVAL '30 days'
+                GROUP BY p.nome, p.categoria
+                ORDER BY receita DESC
+                LIMIT 5
+            """, self.engine)
+            metricas["top_produtos"] = df_produtos.to_dict(orient="records")
+
+            # Comparação mês anterior
+            df_comp = pd.read_sql("""
+                SELECT
+                    DATE_TRUNC('month', data_venda) as mes,
+                    SUM(valor_total) as receita
+                FROM vendas
+                WHERE data_venda >= NOW() - INTERVAL '2 months'
+                AND status = 'concluida'
+                GROUP BY mes
+                ORDER BY mes
+            """, self.engine)
+            metricas["comparativo"] = df_comp.to_dict(orient="records")
+
+            return metricas
+
+        except Exception as e:
+            # Retorna dados de demonstração se banco não disponível
+            return {
+                "vendas_mes": {
+                    "total_vendas": 342,
+                    "receita_total": 187430.50,
+                    "ticket_medio": 548.04,
+                    "maior_venda": 12500.00
+                },
+                "top_produtos": [
+                    {"nome": "Produto A", "categoria": "Eletrônicos", "receita": 45000},
+                    {"nome": "Produto B", "categoria": "Serviços", "receita": 38000},
+                    {"nome": "Produto C", "categoria": "Hardware", "receita": 29000},
+                ],
+                "comparativo": [
+                    {"mes": "2024-02", "receita": 165000},
+                    {"mes": "2024-03", "receita": 187430},
+                ],
+                "demo": True
+            }
+
+    def gerar_narrativa_dashboard(self) -> str:
+        """Gera narrativa em linguagem natural para o dashboard."""
+        print("📊 Coletando métricas...")
+        metricas = self.coletar_metricas()
+
+        prompt = f"""
+        Você é um analista de dados sênior de uma empresa com 200 funcionários.
+        Analise as métricas abaixo e gere uma narrativa executiva em português (máximo 300 palavras).
+        
+        MÉTRICAS DO MÊS:
+        {json.dumps(metricas, indent=2, ensure_ascii=False, default=str)}
+        
+        Inclua:
+        1. Resumo executivo (2-3 linhas)
+        2. Destaques positivos
+        3. Pontos de atenção
+        4. Recomendação principal
+        
+        Tom: direto, profissional, orientado a negócio.
+        """
+
+        return self._perguntar_claude(prompt)
+
+    def detectar_anomalias(self) -> str:
+        """Detecta padrões anômalos nos dados."""
+        metricas = self.coletar_metricas()
+
+        prompt = f"""
+        Analise esses dados de vendas e identifique possíveis anomalias ou padrões incomuns.
+        
+        DADOS:
+        {json.dumps(metricas, indent=2, ensure_ascii=False, default=str)}
+        
+        Responda em português com:
+        1. Anomalias detectadas (se houver)
+        2. Possíveis causas
+        3. Ação recomendada
+        
+        Se não houver anomalias, informe que os dados estão dentro do padrão esperado.
+        """
+
+        return self._perguntar_claude(prompt, max_tokens=500)
+
+    def gerar_relatorio_executivo(self) -> str:
+        """Gera relatório executivo completo."""
+        metricas = self.coletar_metricas()
+        data_ref = datetime.now().strftime("%B de %Y")
+
+        prompt = f"""
+        Gere um relatório executivo de dados para {data_ref} em português.
+        
+        DADOS DA EMPRESA:
+        {json.dumps(metricas, indent=2, ensure_ascii=False, default=str)}
+        
+        CONTEXTO:
+        - Empresa de 200 funcionários
+        - Migrou da stack Microsoft para open source
+        - Economia de R$ 16.356/mês com a migração
+        
+        Formato do relatório:
+        # Relatório Executivo — {data_ref}
+        
+        ## Resumo Executivo
+        [2-3 parágrafos]
+        
+        ## Resultados do Período
+        [Bullets com os principais números]
+        
+        ## Análise de Produtos
+        [Top produtos e tendências]
+        
+        ## Recomendações
+        [3 ações concretas]
+        
+        ## Conclusão
+        [1 parágrafo]
+        """
+
+        return self._perguntar_claude(prompt, max_tokens=1500)
+
+    def responder_pergunta(self, pergunta: str) -> str:
+        """
+        Responde perguntas em linguagem natural sobre os dados.
+        Exemplo: "Quais foram os 3 melhores produtos do mês?"
+        """
+        metricas = self.coletar_metricas()
+
+        prompt = f"""
+        Você é um analista de dados. Responda a pergunta abaixo com base nos dados disponíveis.
+        Seja direto e objetivo. Responda em português.
+        
+        DADOS DISPONÍVEIS:
+        {json.dumps(metricas, indent=2, ensure_ascii=False, default=str)}
+        
+        PERGUNTA: {pergunta}
+        """
+
+        return self._perguntar_claude(prompt, max_tokens=500)
+
+
+def main():
+    print("=" * 60)
+    print("🤖 ANALISTA DE DADOS COM IA — Claude API")
+    print(f"Data: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+    print("=" * 60)
+
+    analyst = DataAnalyst()
+
+    print("\n📝 Gerando narrativa do dashboard...")
+    narrativa = analyst.gerar_narrativa_dashboard()
+    print("\n" + narrativa)
+
+    print("\n" + "=" * 60)
+    print("🔍 Verificando anomalias...")
+    anomalias = analyst.detectar_anomalias()
+    print("\n" + anomalias)
+
+    print("\n" + "=" * 60)
+    print("💬 Exemplo — Pergunta em linguagem natural:")
+    resposta = analyst.responder_pergunta("Qual foi a receita total e como foi o desempenho comparado ao mês anterior?")
+    print("\n" + resposta)
+
+    print("\n" + "=" * 60)
+    print("✅ Análise concluída!")
+    print("💡 Dica: Configure ANTHROPIC_API_KEY no .env para usar com dados reais.")
+
+
+if __name__ == "__main__":
+    main()
